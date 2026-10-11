@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="IIV tarixi, nishoni, vazifalari va xizmatga kirish haqida interaktiv tanishuv.">
+  <link rel="icon" type="image/png" href="iiv-logo.png">
+  <title>IIV yaqindan</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #f3f5f8;
+      --gold: #e6c77f;
+      --muted: #aab6c8;
+      --panel: rgb(19 31 49 / 94%);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 35% 40%, #1d3150 0%, #101827 44%, #0b1220 82%);
+    }
+
+    .floating-gear {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .floating-gear svg {
+      position: absolute;
+      width: clamp(110px, 17vw, 230px);
+      height: auto;
+      color: #9aabc1;
+      opacity: 0.1;
+      animation: gear-float 12s ease-in-out infinite alternate;
+    }
+
+    .floating-gear svg:nth-child(1) {
+      top: 9%;
+      left: 5%;
+      transform: rotate(-18deg);
+    }
+
+    .floating-gear svg:nth-child(2) {
+      right: 4%;
+      bottom: 10%;
+      animation-delay: -4s;
+      transform: rotate(155deg);
+    }
+
+    .floating-gear svg:nth-child(3) {
+      top: 54%;
+      left: 46%;
+      width: clamp(72px, 10vw, 135px);
+      opacity: 0.07;
+      animation-delay: -8s;
+      transform: rotate(-28deg);
+    }
+
+    @keyframes gear-float {
+      from {
+        translate: 0 -10px;
+      }
+
+      to {
+        translate: 0 16px;
+      }
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .experience {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(330px, 1.05fr);
+      align-items: center;
+      gap: clamp(28px, 6vw, 84px);
+      width: min(1120px, 94vw);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 42px 18px;
+    }
+
+    .logo-area {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .logo-frame {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(100%, 440px);
+      aspect-ratio: 1;
+    }
+
+    .logo-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 28px rgb(0 0 0 / 36%));
+      transition: transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-origin: var(--focus-x, 50%) var(--focus-y, 50%);
+    }
+
+    .logo-image.is-focused {
+      transform: scale(1.07);
+    }
+
+    .logo-prompt {
+      max-width: 32ch;
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .guide {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      width: min(100%, 440px);
+      min-height: 150px;
+      margin-top: -2px;
+    }
+
+    .guide-figure {
+      flex: 0 0 auto;
+      width: clamp(112px, 15vw, 148px);
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 12px 14px rgb(0 0 0 / 28%));
+    }
+
+    .guide-arm {
+      transform-box: fill-box;
+      transform-origin: 74% 49%;
+    }
+
+    .guide.is-speaking .guide-arm {
+      animation: point 480ms ease-in-out infinite alternate;
+    }
+
+    @keyframes point {
+      to {
+        transform: rotate(-3deg) translate(2px, -2px);
+      }
+    }
+
+    .guide-bubble {
+      position: relative;
+      align-self: center;
+      max-width: 240px;
+      margin: 0 0 34px -2px;
+      padding: 13px 15px;
+      border: 1px solid rgb(230 199 127 / 35%);
+      border-radius: 15px 15px 15px 3px;
+      background: rgb(19 31 49 / 94%);
+      color: #dce4ef;
+      font-size: 12px;
+      line-height: 1.55;
+      box-shadow: 0 14px 30px rgb(0 0 0 / 20%);
+    }
+
+    .guide-name {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .focus-ring {
+      position: absolute;
+      z-index: 2;
+      top: var(--target-y, 50%);
+      left: var(--target-x, 50%);
+      width: clamp(48px, 8vw, 68px);
+      aspect-ratio: 1;
+      border: 2px solid #ffe39a;
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgb(230 199 127 / 18%), 0 0 24px rgb(255 216 133 / 58%);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.45);
+    }
+
+    .focus-ring.is-visible {
+      animation: focus-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes focus-in {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.45);
+      }
+
+      70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.13);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .info-panel {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 500px;
+      padding: clamp(22px, 3vw, 34px);
+      border: 1px solid rgb(230 199 127 / 25%);
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgb(0 0 0 / 24%);
+      backdrop-filter: blur(14px);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.15;
+    }
+
+    .category-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .category-button,
+    .topic-button,
+    .restart-button {
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .category-button {
+      min-height: 44px;
+      padding: 9px 8px;
+      border: 1px solid #33435b;
+      border-radius: 10px;
+      background: #142238;
+      color: #c8d2e1;
+      font-size: 12px;
+      transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .category-button:hover,
+    .category-button[aria-pressed="true"] {
+      border-color: var(--gold);
+      background: #273349;
+      color: #ffe4a3;
+    }
+
+    .topic-list {
+      display: grid;
+      gap: 7px;
+      max-height: 185px;
+      margin: 0 0 20px;
+      padding: 0 4px 0 0;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .topic-button {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: start;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: #111d2e;
+      color: #d5deeb;
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: left;
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .topic-button:hover {
+      transform: translateX(3px);
+    }
+
+    .topic-button[aria-pressed="true"] {
+      border-color: rgb(230 199 127 / 65%);
+      background: #24334a;
+      color: #fff0c8;
+    }
+
+    .topic-number {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .detail-card {
+      min-height: 148px;
+      padding: 18px;
+      border-left: 2px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      background: rgb(255 255 255 / 4%);
+      animation: detail-in 320ms ease both;
+    }
+
+    @keyframes detail-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .detail-title {
+      margin: 0 0 9px;
+      color: #ffe4a3;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .detail-copy {
+      margin: 0;
+      color: #d0d8e5;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .source-link {
+      display: inline-flex;
+      margin-top: 13px;
+      color: var(--gold);
+      font-size: 12px;
+      text-underline-offset: 3px;
+    }
+
+    .source-link[hidden],
+    .caveat[hidden] {
+      display: none;
+    }
+
+    .caveat {
+      margin: 13px 0 0;
+      color: #9eabc0;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .restart-button {
+      margin-top: 16px;
+      padding: 9px 13px;
+      border: 1px solid #42536a;
+      border-radius: 9px;
+      background: transparent;
+      color: #d5deeb;
+      font-size: 12px;
+      transition: border-color 180ms ease, color 180ms ease;
+    }
+
+    .restart-button:hover {
+      border-color: var(--gold);
+      color: #ffe4a3;
+    }
+
+    .restart-button:focus-visible,
+    .category-button:focus-visible,
+    .topic-button:focus-visible {
+      outline: 2px solid #ffe39a;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 760px) {
+      .experience {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        width: min(560px, 100%);
+        min-height: 100vh;
+        padding: 24px 18px 32px;
+      }
+
+      .logo-area {
+        gap: 10px;
+      }
+
+      .logo-frame {
+        width: min(74vw, 300px);
+      }
+
+      .info-panel {
+        max-width: none;
+        padding: 20px;
+      }
+
+      .topic-list {
+        max-height: 152px;
+      }
+
+    }
+
+    @media (max-width: 400px) {
+      .category-list {
+        grid-template-columns: 1fr;
+      }
+
+      .category-button {
+        text-align: left;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-gear" aria-hidden="true">
+    <svg viewBox="0 0 240 70">
+      <path fill="currentColor" d="M8 27h30l13-10h49l8 8h34l8-5h72v10h-25v6h-42l-9 9h-17v17H99V47H79L66 36H40v11H26V36H8z"></path>
+      <path fill="currentColor" d="M112 40h21v6h-21zM56 20h31v5H56z"></path>
+    </svg>
+    <svg viewBox="0 0 240 70">
+      <path fill="currentColor" d="M8 27h30l13-10h49l8 8h34l8-5h72v10h-25v6h-42l-9 9h-17v17H99V47H79L66 36H40v11H26V36H8z"></path>
+      <path fill="currentColor" d="M112 40h21v6h-21zM56 20h31v5H56z"></path>
+    </svg>
+    <svg viewBox="0 0 150 90">
+      <path fill="currentColor" d="M10 22h28l8 9h65l8 8v13H77l-5 30H52l5-30H40l-9-12H10z"></path>
+      <path fill="currentColor" d="M54 34h41v6H54z"></path>
+    </svg>
+  </div>
+  <main class="experience" id="experience">
+    <section class="logo-area" aria-label="Tanlangan mavzuga mos ravishda yoritiladigan IIV logotipi">
+      <div class="logo-frame" id="logoFrame">
+        <img
+          class="logo-image"
+          id="logoImage"
+          src="iiv-logo.png"
+          alt="Foydalanuvchi taqdim etgan IIV nishoni tasviri"
+        >
+        <span class="focus-ring" id="focusRing" aria-hidden="true"></span>
+      </div>
+      <p class="logo-prompt">Mavzuni tanlang — logotipdagi tegishli joy yoritiladi.</p>
+      <div class="guide" id="guide">
+        <svg class="guide-figure" viewBox="0 0 170 210" role="img" aria-labelledby="guideTitle guideDescription">
+          <title id="guideTitle">Multfilm uslubidagi IIV yo‘lboshchisi</title>
+          <desc id="guideDescription">Do‘stona qiyofadagi forma kiygan qahramon logotip tomon qo‘li bilan ishora qilmoqda.</desc>
+          <defs>
+            <linearGradient id="uniform" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#41628d"></stop>
+              <stop offset="1" stop-color="#172a46"></stop>
+            </linearGradient>
+            <linearGradient id="skin" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#f5c99f"></stop>
+              <stop offset="1" stop-color="#d99669"></stop>
+            </linearGradient>
+          </defs>
+          <g class="guide-arm">
+            <path d="M97 122 C111 109 119 84 130 61 L145 39 L154 25 Q158 20 161 24 L159 39 L166 31 Q171 28 172 34 L165 47 L155 57 L143 81 L127 129 Z"
+              fill="url(#skin)" stroke="#9b684e" stroke-width="2.5" stroke-linejoin="round"></path>
+            <path d="M144 41 L154 25 Q158 20 161 24 L159 39 L166 31 Q171 28 172 34 L165 47 L155 57 Z"
+              fill="#f1bd91" stroke="#9b684e" stroke-width="2.5" stroke-linejoin="round"></path>
+            <path d="M143 61 L153 67" fill="none" stroke="#bd805b" stroke-width="2" stroke-linecap="round"></path>
+          </g>
+          <path d="M26 123 Q28 107 43 102 L58 97 L84 97 L101 104 Q113 110 117 128 L127 203 L13 203 Z"
+            fill="url(#uniform)" stroke="#9fb1ca" stroke-width="2.5" stroke-linejoin="round"></path>
+          <path d="M49 101 L64 119 L78 101 L72 145 L60 145 Z" fill="#e6c77f"></path>
+          <path d="M62 118 L62 196" stroke="#afc0d8" stroke-width="2" opacity=".75"></path>
+          <circle cx="62" cy="154" r="3" fill="#e6c77f"></circle>
+          <circle cx="62" cy="173" r="3" fill="#e6c77f"></circle>
+          <path d="M33 124 L47 127 L43 143 L29 140 Z" fill="#203b60" stroke="#9fb1ca" stroke-width="1.5"></path>
+          <path d="M34 126 L45 128 L43 135 L32 133 Z" fill="#e6c77f"></path>
+          <path d="M48 48 Q48 28 65 27 Q83 29 83 51 L80 79 Q77 97 65 99 Q51 96 48 78 Z"
+            fill="url(#skin)" stroke="#9b684e" stroke-width="2.5"></path>
+          <path d="M49 62 Q40 58 43 70 Q45 77 51 77" fill="#e5ae84" stroke="#9b684e" stroke-width="2"></path>
+          <path d="M80 62 Q89 58 86 70 Q84 77 79 77" fill="#e5ae84" stroke="#9b684e" stroke-width="2"></path>
+          <path d="M54 66 Q58 63 61 66 M69 66 Q73 63 77 66" fill="none" stroke="#49352d" stroke-width="2.5" stroke-linecap="round"></path>
+          <circle cx="58" cy="70" r="2" fill="#26334a"></circle>
+          <circle cx="73" cy="70" r="2" fill="#26334a"></circle>
+          <path d="M61 82 Q66 87 72 81" fill="none" stroke="#8d493b" stroke-width="2.5" stroke-linecap="round"></path>
+          <path d="M45 55 Q42 42 48 34 Q56 24 68 27 Q82 29 85 42 L84 54 Q77 48 76 39 Q65 48 48 47 Z"
+            fill="#243d62" stroke="#aebbd0" stroke-width="2"></path>
+          <path d="M42 48 Q64 42 88 48 L86 56 Q63 51 43 57 Z"
+            fill="#182b47" stroke="#e6c77f" stroke-width="2" stroke-linejoin="round"></path>
+          <path d="M63 37 L67 32 L71 37 L67 42 Z" fill="#e6c77f"></path>
+        </svg>
+        <p class="guide-bubble" id="guideText">
+          <span class="guide-name">Yo‘lboshchi</span>
+          <span id="guideCopy" aria-live="polite">Mavzuni tanlang, men logotipdagi kerakli joyni ko‘rsataman.</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="info-panel" aria-labelledby="pageTitle">
+      <p class="eyebrow">Interaktiv tanishuv</p>
+      <h1 id="pageTitle">IIV bilan tanishing</h1>
+
+      <nav class="category-list" id="categoryList" aria-label="Ma’lumot bo‘limlari"></nav>
+      <ul class="topic-list" id="topicList" aria-label="Mavzular"></ul>
+
+      <article class="detail-card" id="detailCard" aria-live="polite">
+        <h2 class="detail-title" id="detailTitle">Mavzuni tanlang</h2>
+        <p class="detail-copy" id="detailCopy">
+          Har bir band alohida ochiladi. Tanlangan mavzuga qarab logotipdagi tegishli qism belgilanadi.
+        </p>
+        <a class="source-link" id="sourceLink" hidden target="_blank" rel="noreferrer">
+          Rasmiy hujjatni ko‘rish
+        </a>
+        <p class="caveat" id="caveat" hidden></p>
+      </article>
+      <button class="restart-button" id="restartButton" type="button">Yoritishni tozalash</button>
+    </section>
+
+  </main>
+
+  <script>
+    const sources = {
+      law: "https://lex.uz/docs/3027843",
+      service: "https://lex.uz/docs/3430641"
+    };
+
+    const categories = [
+      {
+        id: "history",
+        label: "Tarix",
+        topics: [
+          {
+            title: "Huquqiy asos",
+            copy: "2016-yil 16-sentabrda “Ichki ishlar organlari to‘g‘risida”gi O‘RQ-407-son Qonun qabul qilingan. U ichki ishlar organlari faoliyatining huquqiy asoslari, vakolatlari va majburiyatlarini belgilaydi.",
+            target: [50, 12],
+            source: sources.law
+          },
+          {
+            title: "Ushbu nishon tasvirining tarixi",
+            copy: "Bu rasmning aynan qachon va qaysi rasmiy hujjat bilan tasdiqlanganini hozircha ishonchli rasmiy manba bilan tasdiqlay olmadim. Shuning uchun taxminiy sana yoki kelib chiqish tarixini fakt sifatida bermayman.",
+            target: [50, 50],
+            caveat: "Tizim tarixi va aynan shu tasvir/emblemaning tarixi bir xil narsa emas."
+          }
+        ]
+      },
+      {
+        id: "emblem",
+        label: "Nishon",
+        topics: [
+          {
+            title: "Tashqi halqa va yozuv",
+            copy: "Rasmda tashqi doira bo‘ylab O‘zbekiston Respublikasi Ichki ishlar vazirligi nomi yozilgan. Halqa nishonning matnli tashqi qismi sifatida ko‘rsatilgan.",
+            target: [50, 12],
+            caveat: "Halqaning rasmiy ramziy talqini alohida tasdiqlangan manba bilan tekshirilishi kerak."
+          },
+          {
+            title: "Qanotli tasvir",
+            copy: "Nishonning yuqori-markaziy qismida qanotli qushga o‘xshash tasvir ko‘rinadi. Bu yerda faqat rasmda ko‘rinayotgan shakl tasvirlanmoqda; aniq turi va rasmiy ma’nosi tasdiqlanmagan.",
+            target: [50, 31],
+            caveat: "Rasmga qarab qush turini yoki uning rasmiy ma’nosini taxmin qilmaymiz."
+          },
+          {
+            title: "Markaziy qalqonsimon qism",
+            copy: "Nishonning o‘rtasida dumaloq, qalqonga o‘xshash metall tusli detal va markaziy naqsh bor. Tanlanganda aynan shu markaz ajratib ko‘rsatiladi.",
+            target: [50, 50],
+            caveat: "Markaziy tasvirning rasmiy izohi uchun tasdiqlangan manba kerak."
+          },
+          {
+            title: "Yon tomondagi kesishgan shakllar",
+            copy: "Markaziy qism ortida ikki tomonga yo‘nalgan kesishgan uzun shakllar ko‘rinadi. Ularning rasmiy nomi va ramziy ma’nosi ushbu rasmning o‘zidan aniqlanmaydi.",
+            target: [71, 39],
+            caveat: "Rasmiy izoh topilmaguncha bu elementga ma’no biriktirilmaydi."
+          }
+        ]
+      },
+      {
+        id: "duties",
+        label: "Vazifalar",
+        topics: [
+          {
+            title: "Huquqbuzarliklarning oldini olish",
+            copy: "Ichki ishlar organlari faoliyatining qonunda belgilangan yo‘nalishlaridan biri — huquqbuzarliklar profilaktikasi va jinoyatchilikka qarshi kurashish.",
+            target: [30, 48],
+            source: sources.law
+          },
+          {
+            title: "Jamoat tartibi va xavfsizligi",
+            copy: "Jamoat joylarida tartibni saqlash hamda fuqarolar va jamiyat xavfsizligini ta’minlash ichki ishlar organlari faoliyatining asosiy yo‘nalishlaridandir.",
+            target: [70, 48],
+            source: sources.law
+          },
+          {
+            title: "Huquq va mol-mulkni himoya qilish",
+            copy: "Organlar fuqarolarning huquqlari, erkinliklari va qonuniy manfaatlarini, shuningdek mol-mulkini jinoiy tajovuzlardan himoya qilishda ishtirok etadi.",
+            target: [50, 50],
+            source: sources.law
+          },
+          {
+            title: "Surishtiruv va tergov",
+            copy: "Qonunda berilgan vakolatlar doirasida ichki ishlar organlari jinoyatlar bo‘yicha surishtiruv va dastlabki tergov ishlarini amalga oshiradi.",
+            target: [50, 72],
+            source: sources.law
+          }
+        ]
+      },
+      {
+        id: "careers",
+        label: "Ishga kirish",
+        topics: [
+          {
+            title: "Avval yo‘nalishni tanlang",
+            copy: "IIV tizimida turli lavozim va xizmat yo‘nalishlari bor. Qaysi hududda va qaysi yo‘nalishda ishlamoqchi ekaningizni belgilang. IIV Akademiyasiga o‘qishga kirish esa ishga qabul qilinish bilan bir xil jarayon emas.",
+            target: [50, 50],
+            source: sources.service,
+            guide: "Birinchi qadam — qaysi hudud va qaysi xizmat yo‘nalishi sizga mosligini aniqlash. Akademiyaga o‘qish uchun kirish alohida tanlov."
+          },
+          {
+            title: "Vakansiya va talablarni tekshiring",
+            copy: "Talablar lavozimga qarab farq qilishi mumkin. Vakansiyaning rasmiy e’lonidagi fuqarolik, ta’lim, yosh, sog‘liq va boshqa mezonlarni aynan o‘sha e’lon hamda amaldagi nizomdan tekshiring; bitta umumiy yosh yoki hujjat ro‘yxatini hamma lavozimga tatbiq qilmang.",
+            target: [50, 50],
+            source: sources.service,
+            caveat: "Qabul shartlari o‘zgarishi va lavozimga qarab farq qilishi mumkin. Yakuniy ma’lumotni vakansiya e’loni yoki IIVning kadrlar bo‘linmasidan oling.",
+            guide: "Talablar lavozimga qarab o‘zgaradi. Yosh, ta’lim va sog‘liq bo‘yicha mezonlarni tanlagan vakansiyangizdan tekshiring."
+          },
+          {
+            title: "Kadrlar bo‘linmasiga murojaat qiling",
+            copy: "Yashash hududingizdagi ichki ishlar organining kadrlar bo‘linmasidan qabul ochiqligi, vakansiya talablari, ariza topshirish joyi va muddatlarini so‘rang. Faqat rasmiy aloqa kanallaridan foydalaning.",
+            target: [50, 50],
+            source: sources.service,
+            guide: "O‘zingiz yashaydigan hududdagi IIB kadrlar bo‘linmasidan hozirgi vakansiya va ariza muddatini so‘rang."
+          },
+          {
+            title: "Hujjatlarni e’lon bo‘yicha tayyorlang",
+            copy: "Ariza va shaxsni tasdiqlovchi hamda ta’limga oid hujjatlarni faqat vakansiya e’lonida so‘ralgan tartibda tayyorlang. Asl hujjat yoki shaxsiy ma’lumotlarni norasmiy sahifalarga yubormang.",
+            target: [50, 50],
+            source: sources.service,
+            guide: "Hujjatlar ro‘yxatini kadrlar bo‘linmasidan aniq oling. Shaxsiy ma’lumotlaringizni faqat rasmiy kanalga topshiring."
+          },
+          {
+            title: "Tanlov bosqichlariga tayyorlaning",
+            copy: "Qabul jarayonida lavozim va amaldagi tartibga qarab suhbat, kasbiy yoki jismoniy sinov, tibbiy ko‘rik va boshqa tekshiruvlar bo‘lishi mumkin. Qaysi bosqichlar qo‘llanishini kadrlar bo‘linmasidan oldindan aniqlang.",
+            target: [50, 50],
+            source: sources.service,
+            guide: "Suhbat yoki sinovlar bo‘lishi mumkin. Aynan siz topshirayotgan lavozimdagi bosqichlar ro‘yxatini oldindan oling."
+          }
+        ]
+      }
+    ];
+
+    const experience = document.getElementById("experience");
+    const categoryList = document.getElementById("categoryList");
+    const topicList = document.getElementById("topicList");
+    const detailCard = document.getElementById("detailCard");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCopy = document.getElementById("detailCopy");
+    const sourceLink = document.getElementById("sourceLink");
+    const caveat = document.getElementById("caveat");
+    const logoFrame = document.getElementById("logoFrame");
+    const logoImage = document.getElementById("logoImage");
+    const focusRing = document.getElementById("focusRing");
+    const guide = document.getElementById("guide");
+    const guideCopy = document.getElementById("guideCopy");
+    let activeCategoryId = categories[0].id;
+    let activeTopic = null;
+
+    function selectTopic(topic, button) {
+      activeTopic = topic;
+      topicList.querySelectorAll(".topic-button").forEach((item) => {
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+
+      detailCard.style.animation = "none";
+      void detailCard.offsetWidth;
+      detailCard.style.animation = "";
+      detailTitle.textContent = topic.title;
+      detailCopy.textContent = topic.copy;
+      sourceLink.hidden = !topic.source;
+      if (topic.source) {
+        sourceLink.href = topic.source;
+      }
+      caveat.hidden = !topic.caveat;
+      caveat.textContent = topic.caveat || "";
+
+      logoFrame.style.setProperty("--target-x", `${topic.target[0]}%`);
+      logoFrame.style.setProperty("--target-y", `${topic.target[1]}%`);
+      logoImage.style.setProperty("--focus-x", `${topic.target[0]}%`);
+      logoImage.style.setProperty("--focus-y", `${topic.target[1]}%`);
+      logoImage.classList.remove("is-focused");
+      focusRing.classList.remove("is-visible");
+      guide.classList.add("is-speaking");
+      guideCopy.textContent = topic.guide || topic.copy;
+      void logoImage.offsetWidth;
+      logoImage.classList.add("is-focused");
+      focusRing.classList.add("is-visible");
+    }
+
+    function renderCategories() {
+      categoryList.replaceChildren();
+      categories.forEach((category) => {
+        const button = document.createElement("button");
+        button.className = "category-button";
+        button.type = "button";
+        button.textContent = category.label;
+        button.setAttribute("aria-pressed", String(category.id === activeCategoryId));
+        button.addEventListener("click", () => {
+          activeCategoryId = category.id;
+          activeTopic = null;
+          renderCategories();
+          renderTopics();
+          detailTitle.textContent = `${category.label} bo‘limi`;
+          detailCopy.textContent = "Ro‘yxatdan mavzuni tanlang — logotipdagi tegishli qism ajratib ko‘rsatiladi.";
+          sourceLink.hidden = true;
+          caveat.hidden = true;
+          logoImage.classList.remove("is-focused");
+          focusRing.classList.remove("is-visible");
+          guide.classList.remove("is-speaking");
+          guideCopy.textContent = "Ro‘yxatdan mavzuni tanlang, logotipdagi tegishli joyni ko‘rsataman.";
+        });
+        categoryList.append(button);
+      });
+    }
+
+    function renderTopics() {
+      const category = categories.find((item) => item.id === activeCategoryId);
+      topicList.replaceChildren();
+
+      category.topics.forEach((topic, index) => {
+        const listItem = document.createElement("li");
+        const button = document.createElement("button");
+        const number = document.createElement("span");
+        const label = document.createElement("span");
+
+        button.className = "topic-button";
+        button.type = "button";
+        button.setAttribute("aria-pressed", "false");
+        number.className = "topic-number";
+        number.textContent = String(index + 1).padStart(2, "0");
+        label.textContent = topic.title;
+        button.append(number, label);
+        button.addEventListener("click", () => selectTopic(topic, button));
+        listItem.append(button);
+        topicList.append(listItem);
+      });
+    }
+
+    document.getElementById("restartButton").addEventListener("click", () => {
+      logoImage.classList.remove("is-focused");
+      focusRing.classList.remove("is-visible");
+      guide.classList.remove("is-speaking");
+      detailTitle.textContent = "Mavzuni tanlang";
+      detailCopy.textContent = "Har bir band alohida ochiladi. Tanlangan mavzuga qarab logotipdagi tegishli qism belgilanadi.";
+      sourceLink.hidden = true;
+      caveat.hidden = true;
+      activeTopic = null;
+      topicList.querySelectorAll(".topic-button").forEach((item) => item.setAttribute("aria-pressed", "false"));
+      guideCopy.textContent = "Mavzuni tanlang, men logotipdagi kerakli joyni ko‘rsataman.";
+    });
+
+    renderCategories();
+    renderTopics();
+  </script>
+</body>
+</html>
